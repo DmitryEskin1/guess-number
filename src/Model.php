@@ -2,6 +2,7 @@
 
 namespace DmitryEskin1\guess_number\Model;
 
+use function cli\prompt;
 use function DmitryEskin1\guess_number\View\saySalute;
 use function DmitryEskin1\guess_number\View\endGame;
 use function DmitryEskin1\guess_number\View\MenuGame;
@@ -27,31 +28,25 @@ function showGame($userName)
 
     $idNewGame = insertNewGame($userName, $hidden_num, MAX_NUMBER);
 
-    while($attempt <= NUMBER_ATTEMPT)
-    {
+    while ($attempt <= NUMBER_ATTEMPT) {
         $get_num = readline();
 
-        while(is_numeric($get_num) === false)
-        {
+        while (is_numeric($get_num) === false) {
             echo "Not a number entered! " . PHP_EOL;
             $get_num = readline();
         }
 
-        if ($get_num == $hidden_num)
-        {
+        if ($get_num == $hidden_num) {
             addAttemptInDB($idNewGame, $get_num, "guessed", $attempt);
             updateInfoGame($idNewGame, "win");
             endGame($hidden_num, $attempt);
             break;
         }
 
-        if ($get_num < $hidden_num)
-        {
+        if ($get_num < $hidden_num) {
             echo 'Your number is too small' . PHP_EOL;
             addAttemptInDB($idNewGame, $get_num, "number is small", $attempt);
-        }
-        elseif ($get_num > $hidden_num)
-        {
+        } elseif ($get_num > $hidden_num) {
             echo 'Your number is too large' . PHP_EOL;
             addAttemptInDB($idNewGame, $get_num, "number is large", $attempt);
         }
@@ -59,8 +54,7 @@ function showGame($userName)
         $attempt++;
     }
 
-    if ($attempt > NUMBER_ATTEMPT)
-    {
+    if ($attempt > NUMBER_ATTEMPT) {
         updateInfoGame($idNewGame, "loose");
         endGame($hidden_num);
     }
@@ -72,39 +66,37 @@ function replayGame($userName)
     echo 'Do you want to end game? (--exit - Exit | --menu - Menu)' . PHP_EOL;
     $replay_game = readline();
 
-    if ($replay_game === 'y' || $replay_game === 'Y')
+    if ($replay_game === 'y' || $replay_game === 'Y') {
         showGame($userName);
-    elseif ($replay_game === 'n' || $replay_game === 'N')
+    } elseif ($replay_game === 'n' || $replay_game === 'N') {
         echo 'TY ' . $userName . '. Goodbye!' . PHP_EOL;
-    elseif ($replay_game === '--exit')
+    } elseif ($replay_game === '--exit') {
         exit();
-    elseif ($replay_game === '--menu')
+    } elseif ($replay_game === '--menu') {
         MenuGame();
-    else
+    } else {
         replayGame($userName);
+    }
 }
 
 function commandHandler($getCommand)
 {
     $checkCommand = false;
 
-    while($checkCommand === false)
-    {
-        if ($getCommand === "--new")
-        {
+    while ($checkCommand === false) {
+        if ($getCommand === "--new") {
             saySalute();
+
             $checkCommand = true;
-        }
-        elseif ($getCommand === "--list")
+        } elseif ($getCommand === "--list") {
             outputListGame();
-        elseif ($getCommand === "--list winners")
+        } elseif ($getCommand === "--list winners") {
             outputListGame("win");
-        elseif ($getCommand === "--list looser")
+        } elseif ($getCommand === "--list looser") {
             outputListGame("loss");
-        elseif ($getCommand === "--top")
+        } elseif ($getCommand === "--top") {
             showTopList();
-        elseif (preg_match('/(^--replay [0-9]+$)/', $getCommand) != 0)
-        {
+        } elseif (preg_match('/(^--replay [0-9]+$)/', $getCommand) != 0) {
             $temp = explode(' ', $getCommand);
             $id = $temp[1];
 
@@ -112,15 +104,15 @@ function commandHandler($getCommand)
 
             $checkId = checkGameid($id);
 
-            if ($checkId)
+            if ($checkId) {
                 showGame($checkId);
-            else
+            } else {
                 echo "There is no such game" . PHP_EOL;
-
-        }
-        elseif ($getCommand === "--exit")
+            }
+        } elseif ($getCommand === "--exit") {
             exit;
-        
-        $getCommand = \cli\prompt("Enter the key value");
+        }
+
+        $getCommand = prompt("Enter the key value: ");
     }
 }

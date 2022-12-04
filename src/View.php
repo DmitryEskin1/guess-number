@@ -2,6 +2,8 @@
 
 namespace DmitryEskin1\guess_number\View;
 
+use function cli\line;
+use function cli\prompt;
 use function DmitryEskin1\guess_number\Model\showGame;
 use function DmitryEskin1\guess_number\Model\commandHandler;
 use function DmitryEskin1\guess_number\Model\replayGame;
@@ -19,7 +21,7 @@ function MenuGame()
     echo "--exit" . PHP_EOL;
     echo PHP_EOL;
 
-    $getCommand = \cli\prompt("Enter key value");
+    $getCommand = prompt("Enter key value: ");
 
     commandHandler($getCommand);
 }
@@ -32,29 +34,25 @@ function saySalute()
 
     $userName = readline();
 
-    if (!empty($userName))
-    {
+    if (!empty($userName)) {
         echo 'Glad to see you, ' . $userName . '!' . PHP_EOL . 'Lets play the guess the number game'
             . ' I guess a number from 1 to ' . MAX_NUMBER .
             ' and you have to guess the number for ' . NUMBER_ATTEMPT . ' attempts' . PHP_EOL;
 
         showGame($userName);
-    }
-    else
+    } else {
         saySalute();
+    }
 }
 
 function endGame($hidden_num, $attempt = false)
 {
     global $userName;
 
-    if ($attempt)
-    {
+    if ($attempt) {
         echo 'Congratulations! You won the game for ' . $attempt . 'attempts' . PHP_EOL;
         replayGame($userName);
-    }
-    else
-    {
+    } else {
         echo 'You lose. I thought of a number: ' . $hidden_num . PHP_EOL;
         replayGame($userName);
     }
@@ -62,10 +60,11 @@ function endGame($hidden_num, $attempt = false)
 
 function showGamesInfo($row)
 {
-    if (empty($row[6]))
+    if (empty($row[6])) {
         $row[6] = "Not completed";
+    }
 
-    \cli\line(
+    line(
         "ID: $row[0]| Date: $row[1] $row[2] | Name: $row[3] | Max number: "
         . "$row[4] | Generated number: $row[5] | Result: $row[6]"
     );
@@ -73,14 +72,16 @@ function showGamesInfo($row)
 
 function showTurnInfo($row)
 {
-    \cli\line("----- Attempt number: $row[0] | 
-    Selected number: $row[1] |Computer response: $row[2]");
+    line(
+        "----- Attempt number: $row[0] | Selected number: $row[1] |Computer response: $row[2]"
+    );
 }
 
 function showGamesTop($row)
 {
-    \cli\line("Name: $row[0] | Number of wins: $row[1] | 
-    Number of losses: $row[2]");
+    line(
+        "Name: $row[0] | Number of wins: $row[1] | Number of losses: $row[2]"
+    );
 }
 
 function exitElseMenu()
@@ -89,10 +90,11 @@ function exitElseMenu()
 
     $command = readline();
 
-    if ($command === '--exit')
+    if ($command === '--exit') {
         exit();
-    elseif ($command === '--menu')
+    } elseif ($command === '--menu') {
         MenuGame();
-    else
+    } else {
         exitElseMenu();
+    }
 }
